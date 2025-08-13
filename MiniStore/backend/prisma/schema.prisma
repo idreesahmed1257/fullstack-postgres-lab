@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  walletBalance Float   @default(1000)
+  created_at DateTime @default(now())
+  orders Order[]
+  giftsSent      Gift[]  @relation("Sender")
+  giftsReceived  Gift[]  @relation("Receiver")
+  sentCredits    CreditTransfer[]  @relation("SenderCredits")
+  receivedCredits CreditTransfer[] @relation("ReceiverCredits")
+}
+
+model Order {
+  id         Int     @id @default(autoincrement())
+  userId     Int
+  user       User    @relation(fields: [userId], references: [id])
+  productIds Int[]   
+  total_amount Float
+  created_at DateTime @default(now())
+}
+
+model Gift {
+  id           Int      @id @default(autoincrement())
+  senderId     Int
+  recipientId  Int
+  productIds   Int[]     
+  giftedAt     DateTime  @default(now())
+  totalAmount Float
+  sender       User      @relation("Sender", fields: [senderId], references: [id])
+  recipient    User      @relation("Receiver", fields: [recipientId], references: [id])
+}
+
+
+model CreditTransfer {
+  id           Int      @id @default(autoincrement())
+  amount       Float
+  sender       User     @relation("SenderCredits", fields: [senderId], references: [id])
+  senderId     Int
+  recipient    User     @relation("ReceiverCredits", fields: [recipientId], references: [id])
+  recipientId  Int
+  createdAt    DateTime @default(now())
+}

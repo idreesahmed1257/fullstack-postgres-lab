@@ -1,0 +1,66 @@
+import { PersonOutlineOutlined, ShoppingCartOutlined } from "@mui/icons-material";
+import { Badge, Button, IconButton, useTheme } from "@mui/material";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import LoginIcon from "../../../assets/LoginIcon";
+import { RootState } from "../../../Redux/store";
+import styles from "./navbar.module.scss";
+import ProfileCard from "../ProfileCard/ProfileCard";
+import toast from "react-hot-toast";
+
+const Navbar = () => {
+  const theme = useTheme();
+  const { isAuth } = useSelector((state: RootState) => state.auth);
+
+  const navigate = useNavigate();
+  const handleSignInClick = () => {
+    navigate("/login");
+  };
+
+  const { cartItems } = useSelector((state: RootState) => state.product);
+
+  const handleCartClick = () => {
+    if (!isAuth) {
+      toast.error("Please Login to Checkout");
+      return;
+    }
+    navigate("/cart");
+  };
+
+  return (
+    <div className={styles.navbar}>
+      <Link to={"/"} className={styles.logoContainer}>
+        <LoginIcon />
+        <p>Giftly</p>
+      </Link>
+
+      <div className={styles.right}>
+        <Badge badgeContent={cartItems?.length} color="primary">
+          <IconButton
+            onClick={handleCartClick}
+            className={styles.iconBtn}
+            style={{
+              backgroundColor: cartItems?.length ? theme.palette.primary.main : theme.palette.background.default,
+            }}
+          >
+            <ShoppingCartOutlined
+              style={{
+                color: cartItems?.length ? theme.palette.background.default : theme.palette.primary.main,
+              }}
+            />
+          </IconButton>
+        </Badge>
+
+        {isAuth ? (
+          <ProfileCard />
+        ) : (
+          <Button className={styles.signinBtn} onClick={handleSignInClick} color="primary" startIcon={<PersonOutlineOutlined />}>
+            Sign In
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Navbar;

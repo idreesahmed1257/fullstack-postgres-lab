@@ -1,0 +1,78 @@
+@import '../../styles/colors';
+
+.card {
+    background-color: $bg-paper;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 250px;
+    height: 100%;
+
+}
+
+.imageWrapper {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background-color: $bg-main;
+
+
+    // Border on top + sides only
+    border: 1px solid $primary;
+    border-bottom: none;
+
+    // Rounded only on top corners
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.details {
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
+    color: $text-dark;
+    margin-bottom: 0.5rem;
+}
+
+.description {
+    font-size: 16px;
+    font-weight: 500;
+    color: $text-dark;
+}
+
+.pricingContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.addToCart {
+    border-radius: 5px !important;
+    height: 40px !important;
+    border: 1px solid $primary !important;
+}
+
+.price {
+    font-size: 18px;
+    font-weight: 500;
+    color: $primary;
+}
