@@ -27,7 +27,7 @@
 }
 
 .subtitle {
-  color:$text-dark;
+  color: $text-dark;
   margin-bottom: 30px;
   font-size: 1rem;
 }
@@ -40,7 +40,7 @@
 .inputLabel {
   display: block;
   margin-bottom: 6px;
-  color:$text-dark;
+  color: $text-dark;
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -52,7 +52,7 @@
   border-radius: 8px;
   font-size: 1rem;
   outline: none;
-  color:$text-dark;
+  color: $text-dark;
   background-color: white;
   transition: border-color 0.3s ease;
 }
@@ -82,9 +82,17 @@
   margin-top: 16px;
   font-size: 0.9rem;
   color: $primary;
-  
-  span{
-      font-weight: bold;
-      cursor: pointer;
+
+  span {
+    font-weight: bold;
+    cursor: pointer;
   }
+
+}
+
+.errorMsg {
+  color: #d32f2f;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  font-weight: 600;
 }

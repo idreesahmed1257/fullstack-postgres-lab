@@ -37,3 +37,22 @@
     border-color: #994D80 !important;
     color: #994D80 !important;
 }
+
+.errorMsg {
+    color: #d32f2f;
+    font-size: 0.85rem;
+    margin-top: 4px;
+    font-weight: 600;
+    width: 100%;
+}
+
+.contentForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 400px;
+
+    div {
+        width: 100%;
+    }
+}

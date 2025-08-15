@@ -1,31 +1,30 @@
-import styles from "../../Login/LoginContainer/loginContainer.module.scss";
-import { useState } from "react";
-import { CircularProgress } from "@mui/material";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { signupService } from "../../../services/auth.service";
+import { useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { signupService } from "../../../services/auth.service";
+import styles from "../../Login/LoginContainer/loginContainer.module.scss";
+
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { SignupFormInputs, signupSchema } from "./signup.helper";
 
 const SignupContainer = () => {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignupFormInputs>({
+    resolver: yupResolver(signupSchema),
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: SignupFormInputs) => {
     try {
-      if (password !== confirmPassword) {
-        toast.error("Passwords do not match!");
-        return;
-      }
-
-      await toast.promise(signupService(name, email, password), {
-        loading: "Signin up...",
+      await toast.promise(signupService(data.name, data.email, data.password), {
+        loading: "Signing up...",
         success: "Signup successful!",
         error: "Signup failed.",
       });
@@ -34,10 +33,6 @@ const SignupContainer = () => {
     } catch (error) {
       console.error("Signup error:", error);
     }
-  };
-
-  const handleClickLogin = () => {
-    navigate("/login");
   };
 
   const toggleShowPassword = () => {
@@ -50,35 +45,29 @@ const SignupContainer = () => {
         <h1 className={styles.title}>Create an Account</h1>
         <p className={styles.subtitle}>Sign up to get started</p>
 
-        <form onSubmit={handleSubmit}>
-          <div className={styles.inputGroup}>
-            <label htmlFor="email" className={styles.inputLabel}>
-              Email Address
-            </label>
-            <input id="email" type="email" placeholder="you@example.com" className={styles.inputField} required value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
-
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className={styles.inputGroup}>
             <label htmlFor="name" className={styles.inputLabel}>
               Full Name
             </label>
-            <input id="name" type="name" placeholder="John Doe" className={styles.inputField} required value={name} onChange={(e) => setName(e.target.value)} />
+            <input id="name" type="text" placeholder="John Doe" className={styles.inputField} {...register("name")} />
+            {errors.name && <p className={styles.errorMsg}>{errors.name.message}</p>}
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label htmlFor="email" className={styles.inputLabel}>
+              Email Address
+            </label>
+            <input id="email" type="email" placeholder="you@example.com" className={styles.inputField} {...register("email")} />
+            {errors.email && <p className={styles.errorMsg}>{errors.email.message}</p>}
           </div>
 
           <div className={styles.inputGroup} style={{ position: "relative" }}>
             <label htmlFor="password" className={styles.inputLabel}>
               Password
             </label>
-            <input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              className={styles.inputField}
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{ paddingRight: "40px" }} // space for toggle icon
-            />
+            <input id="password" type={showPassword ? "text" : "password"} placeholder="Enter your password" className={styles.inputField} style={{ paddingRight: "40px" }} {...register("password")} />
+            {errors.password && <p className={styles.errorMsg}>{errors.password.message}</p>}
             <div
               onClick={toggleShowPassword}
               style={{
@@ -88,12 +77,6 @@ const SignupContainer = () => {
                 cursor: "pointer",
                 color: "#994D80",
                 userSelect: "none",
-              }}
-              aria-label={showPassword ? "Hide password" : "Show password"}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") toggleShowPassword();
               }}
             >
               {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -101,19 +84,18 @@ const SignupContainer = () => {
           </div>
 
           <div className={styles.inputGroup} style={{ position: "relative" }}>
-            <label htmlFor="confirm-password" className={styles.inputLabel}>
-              Conform Password
+            <label htmlFor="confirmPassword" className={styles.inputLabel}>
+              Confirm Password
             </label>
             <input
-              id="confirm-password"
+              id="confirmPassword"
               type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
+              placeholder="Re-enter your password"
               className={styles.inputField}
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              style={{ paddingRight: "40px" }} // space for toggle icon
+              style={{ paddingRight: "40px" }}
+              {...register("confirmPassword")}
             />
+            {errors.confirmPassword && <p className={styles.errorMsg}>{errors.confirmPassword.message}</p>}
             <div
               onClick={toggleShowPassword}
               style={{
@@ -124,24 +106,18 @@ const SignupContainer = () => {
                 color: "#994D80",
                 userSelect: "none",
               }}
-              aria-label={showPassword ? "Hide password" : "Show password"}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") toggleShowPassword();
-              }}
             >
               {showPassword ? <VisibilityOff /> : <Visibility />}
             </div>
           </div>
 
-          <button type="submit" className={styles.loginButton}>
-            Sign Up
+          <button type="submit" className={styles.loginButton} disabled={isSubmitting}>
+            {isSubmitting ? "Signing up..." : "Sign Up"}
           </button>
         </form>
 
         <div className={styles.alreadyAccount}>
-          Already have an account? <span onClick={handleClickLogin}>Login</span>
+          Already have an account? <span onClick={() => navigate("/login")}>Login</span>
         </div>
       </div>
     </div>

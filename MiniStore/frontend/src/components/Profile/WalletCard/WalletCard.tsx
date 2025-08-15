@@ -6,11 +6,21 @@ import styles from "./walletCard.module.scss";
 import { sendCreditsService } from "../../../services/credit.service";
 import { useDispatch } from "react-redux";
 import { deductWalletAmount } from "../../../Redux/slice/auth.slice";
+import { useForm } from "react-hook-form";
+import { WalletFormInputs, walletSchema } from "./walletCard.helper";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const WalletCard = ({ balance }: { balance?: number }) => {
   const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [amount, setAmount] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<WalletFormInputs>({
+    resolver: yupResolver(walletSchema),
+  });
 
   const dispatch = useDispatch();
 
@@ -18,28 +28,18 @@ const WalletCard = ({ balance }: { balance?: number }) => {
     setOpen(true);
   };
 
-  const handleSend = async () => {
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast.error("Please enter a valid email.");
-      return;
-    }
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      toast.error("Please enter a valid amount.");
-      return;
-    }
-
+  const handleSend = async (data: WalletFormInputs) => {
     try {
-      const response = await toast.promise(sendCreditsService(Number(amount), email), {
+      const response = await toast.promise(sendCreditsService(Number(data.amount), data.email), {
         loading: "Sending Credits...",
         success: "Credits sent successfully!",
         error: (err) => err?.response?.data?.message || "Failed to send Credits.",
       });
 
       if (response?.status === 200) {
-        setEmail("");
-        setAmount("");
+        reset();
         setOpen(false);
-        dispatch(deductWalletAmount({ orderAmount: Number(amount) }));
+        dispatch(deductWalletAmount({ orderAmount: Number(data.amount) }));
       }
     } catch (error) {
       console.error("Credit order error:", error);
@@ -59,18 +59,26 @@ const WalletCard = ({ balance }: { balance?: number }) => {
         </Button>
       </div>
 
-      <Dialog open={open} onClose={() => setOpen(false)}>
+      <Dialog maxWidth="lg" open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Gift Credits</DialogTitle>
-        <DialogContent>
-          <TextField margin="dense" label="Recipient's Email" type="email" fullWidth value={email} onChange={(e) => setEmail(e.target.value)} />
-          <TextField margin="dense" label="Amount" type="number" fullWidth value={amount} onChange={(e) => setAmount(e.target.value)} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained" color="primary" onClick={handleSend}>
-            Send
-          </Button>
-        </DialogActions>
+        <form onSubmit={handleSubmit(handleSend)}>
+          <DialogContent className={styles.contentForm}>
+            <div>
+              <TextField size="small" label="Recipient's Email" type="text" fullWidth {...register("email")} />
+              {errors.email && <p className={styles.errorMsg}>{errors.email.message}</p>}
+            </div>
+            <div>
+              <TextField size="small" label="Amount" type="text" fullWidth {...register("amount")} />
+              {errors.amount && <p className={styles.errorMsg}>{errors.amount.message}</p>}
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
+              {isSubmitting ? "Sending..." : "Send"}
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
     </div>
   );
