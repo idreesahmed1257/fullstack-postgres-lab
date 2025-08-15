@@ -18,8 +18,8 @@ export class GiftController {
       const { recipientEmail, productIds, totalAmount } = req.body;
       const senderId = req.user?.id;
 
-      if (!senderId || !recipientEmail || !Array.isArray(productIds) || !totalAmount) {
-        return errorResponse(res, "Missing required fields", 400);
+      if (!senderId) {
+        return errorResponse(res, "User is not Authorized", 401);
       }
 
       const gift = await this.giftService.sendGift(senderId, recipientEmail, productIds, totalAmount);
