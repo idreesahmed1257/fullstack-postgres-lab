@@ -34,15 +34,9 @@ const LoginContainer = () => {
         error: "Login failed.",
       });
 
-      const token = response?.data?.data?.token;
-      const user = response?.data?.data?.user;
+      const { user, token } = response;
 
       if (token) {
-        Cookies.set("accessToken", token, {
-          expires: 7,
-          path: "/",
-          secure: true,
-        });
         dispatch(loginSuccess({ user, token }));
         navigate("/");
       }

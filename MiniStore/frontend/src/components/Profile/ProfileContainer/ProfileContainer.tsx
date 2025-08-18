@@ -13,6 +13,7 @@ const ProfileContainer = () => {
   const [tab, setTab] = useState(0);
 
   const { user } = useSelector((state: RootState) => state.auth);
+  const { walletBalance } = useSelector((state: RootState) => state.auth);
 
   return (
     <div className={styles.profileContainer}>
@@ -22,10 +23,10 @@ const ProfileContainer = () => {
           <img src={`https://robohash.org/${user?.email}.png`} alt="Profile" className={styles.avatar} />
           <h2>{user?.name}</h2>
           <p>{user?.email}</p>
-          <p>{user?.created_at && <p>Joined {dayjs(user.created_at).format("MMMM D, YYYY")}</p>}</p>
+          <p>{user?.createdAt && <p>Joined {dayjs(user.createdAt).format("MMMM D, YYYY")}</p>}</p>
         </div>
 
-        <WalletCard balance={user?.walletBalance} />
+        <WalletCard balance={walletBalance} />
       </div>
       <br />
       <Divider />

@@ -1,9 +1,10 @@
 import { PrismaClient } from "@prisma/client";
+import { randomUUID } from "crypto";
 
 const prisma = new PrismaClient();
 
 export class GiftService {
-  async sendGift(senderId: number, recipientEmail: string, productIds: number[], totalAmount: number) {
+  async sendGift(senderId: string, recipientEmail: string, productIds: number[], totalAmount: number) {
     if (typeof totalAmount !== "number" || totalAmount <= 0) {
       throw new Error("Total amount must be a positive number");
     }
@@ -30,17 +31,21 @@ export class GiftService {
       });
 
       // 4. Create gift record
+      const orderId = randomUUID();
 
       const order = await tx.order.create({
         data: {
+          id : orderId,
           userId: senderId,
           productIds,
           total_amount: totalAmount,
         },
       });
       
+      const giftId = randomUUID();
       const gift = await tx.gift.create({
         data: {
+          id : giftId,
           senderId,
           recipientId: recipient.id,
           productIds,
@@ -56,7 +61,7 @@ export class GiftService {
     });
   }
 
-  async getGiftsSent(userId: number) {
+  async getGiftsSent(userId: string) {
     return prisma.gift.findMany({
       where: { senderId: userId },
       orderBy: { giftedAt: "desc" },
@@ -67,7 +72,7 @@ export class GiftService {
     });
   }
 
-  async getGiftsReceived(userId: number) {
+  async getGiftsReceived(userId: string) {
     return prisma.gift.findMany({
       where: { recipientId: userId },
       orderBy: { giftedAt: "desc" },

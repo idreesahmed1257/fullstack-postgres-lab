@@ -4,11 +4,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../Redux/store";
 import styles from "./profileCard.module.scss";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { logout } from "../../../Redux/slice/auth.slice"; // adjust path
+import { useEffect, useState } from "react";
+import { logout, updateWalletAmount } from "../../../Redux/slice/auth.slice"; // adjust path
+import { getUserService, logoutService } from "../../../services/auth.service";
 
 const ProfileCard = () => {
   const { user } = useSelector((state: RootState) => state.auth);
+  const { walletBalance } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -29,9 +31,23 @@ const ProfileCard = () => {
   };
 
   const handleLogout = () => {
+    logoutService();
     dispatch(logout());
     handleClose();
   };
+
+  const getUser = async () => {
+    try {
+      const response: any = await getUserService();
+      dispatch(updateWalletAmount({ walletAmount: response?.data?.walletBalance }));
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
     <>
@@ -44,7 +60,7 @@ const ProfileCard = () => {
           <div className={styles.wallet}>
             <AccountBalanceWalletOutlined fontSize="small" />
             <Typography variant="body2" className={styles.balance}>
-              ${user?.walletBalance?.toFixed(2)}
+              ${walletBalance?.toFixed(2)}
             </Typography>
           </div>
         </div>

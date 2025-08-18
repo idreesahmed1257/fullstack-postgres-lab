@@ -1,9 +1,10 @@
 import { PrismaClient } from "@prisma/client";
+import { randomUUID } from "crypto";
 
 const prisma = new PrismaClient();
 
 export class CreditService {
-  async sendCredits(senderId: number, recipientEmail: string, amount: number) {
+  async sendCredits(senderId: string, recipientEmail: string, amount: number) {
     if (typeof amount !== "number" || amount <= 0) {
       throw new Error("Amount must be a positive number");
     }
@@ -32,8 +33,10 @@ export class CreditService {
       });
 
       // 5. Create credit transfer record
+      const creditId = randomUUID();
       const creditTransfer = await tx.creditTransfer.create({
         data: {
+          id : creditId,
           senderId,
           recipientId: recipient.id,
           amount,
@@ -48,7 +51,7 @@ export class CreditService {
     });
   }
 
-  async getCreditsSent(userId: number) {
+  async getCreditsSent(userId: string) {
     return prisma.creditTransfer.findMany({
       where: { senderId: userId },
       orderBy: { createdAt: "desc" },
@@ -59,7 +62,7 @@ export class CreditService {
     });
   }
 
-  async getCreditsReceived(userId: number) {
+  async getCreditsReceived(userId: string) {
     return prisma.creditTransfer.findMany({
       where: { recipientId: userId },
       orderBy: { createdAt: "desc" },

@@ -7,12 +7,14 @@ interface AuthState {
   user: User | null;
   token: string | null;
   isAuth: Boolean;
+  walletBalance: number;
 }
 
 const initialState: AuthState = {
   user: null,
   token: null,
   isAuth: false,
+  walletBalance: 0,
 };
 
 const authSlice = createSlice({
@@ -33,12 +35,12 @@ const authSlice = createSlice({
     },
     deductWalletAmount(state: AuthState, action: PayloadAction<{ orderAmount: number }>) {
       if (state.user) {
-        state.user.walletBalance = (state.user.walletBalance || 0) - action.payload.orderAmount;
+        state.walletBalance = (state.walletBalance || 0) - action.payload.orderAmount;
       }
     },
     updateWalletAmount(state: AuthState, action: PayloadAction<{ walletAmount: number }>) {
       if (state.user) {
-        state.user.walletBalance = action.payload.walletAmount;
+        state.walletBalance = action.payload.walletAmount;
       }
     },
   },

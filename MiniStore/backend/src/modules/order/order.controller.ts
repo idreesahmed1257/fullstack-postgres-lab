@@ -1,8 +1,8 @@
 import { Response } from "express";
 import { errorResponse, successResponse } from "../../utils/response";
-import { AuthRequest } from "../user/auth.middleware";
-import { OrderService } from "./order.service";
 import { ProductService } from "../product/product.service";
+import { OrderService } from "./order.service";
+import { AuthRequest } from "../user/auth.middleware";
 
 export class OrderController {
   private orderService: OrderService;
@@ -32,7 +32,7 @@ export class OrderController {
     try {
       const { id } = req.user;
       if (!id) return errorResponse(res, "Missing userId param", 400);
-      const orders = await this.orderService.getOrdersByUser(Number(id));
+      const orders = await this.orderService.getOrdersByUser(id);
 
       const ordersWithProducts = await Promise.all(
         orders.map(async (order) => {

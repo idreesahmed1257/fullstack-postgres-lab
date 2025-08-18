@@ -1,35 +1,29 @@
-import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../../config/env";
-import { UserService } from "./user.service";
+import { Request, Response, NextFunction } from "express";
+import { auth } from "../../auth";
+
 
 export interface AuthRequest extends Request {
   user?: any;
 }
 
-const userService = new UserService();
 
-export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  const authHeader = req.headers["authorization"];
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ success: false, message: "No token provided" });
-  }
-
-  const token = authHeader.split(" ")[1];
-
+const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { email: string; userId: string };
-
-    // Use service to check if user exists
-    const dbUser = await userService.findUserByEmail(decoded.email);
-
-    if (!dbUser) {
-      return res.status(401).json({ success: false, message: "User no longer exists" });
+    const headers = new Headers();
+    for (const [key, value] of Object.entries(req.headers)) {
+      if (value) headers.set(key, Array.isArray(value) ? value.join(",") : value);
     }
-    dbUser.password = "";
-    req.user = dbUser;
+
+    const session = await auth.api.getSession({ headers });
+    if (!session) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    (req as any).user = session.user;
     next();
   } catch (err) {
-    return res.status(401).json({ success: false, message: "Invalid or expired token" });
+    return res.status(401).json({ success: false, message: "Unauthorized" });
   }
 };
+
+export default requireAuth;

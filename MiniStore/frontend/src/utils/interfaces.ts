@@ -10,6 +10,5 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  walletBalance: number;
-  created_at: Date;
+  createdAt: Date;
 }

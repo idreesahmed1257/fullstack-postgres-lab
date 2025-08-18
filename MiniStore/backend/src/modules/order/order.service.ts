@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import axios from "axios";
+import { randomUUID } from "crypto";
 
 const prisma = new PrismaClient();
 
 export class OrderService {
-  async createOrder(userId: number, productIds: number[], totalAmount: number) {
+  async createOrder(userId: string, productIds: number[], totalAmount: number) {
     if (typeof totalAmount !== "number" || totalAmount <= 0) {
       throw new Error("Insufficient wallet balance");
     }
@@ -13,7 +13,6 @@ export class OrderService {
       throw new Error("You must select product to create order");
     }
     return await prisma.$transaction(async (tx) => {
-      // 1. Deduct wallet balance
       const user = await tx.user.findUnique({ where: { id: userId } });
       if (!user) throw new Error("User not found");
       if (user.walletBalance < totalAmount) throw new Error("Insufficient wallet balance");
@@ -21,9 +20,11 @@ export class OrderService {
         where: { id: userId },
         data: { walletBalance: { decrement: totalAmount } },
       });
+      const orderId = randomUUID();
       const order = await tx.order.create({
         data: {
-          userId,
+          id: orderId,
+          userId: userId,
           productIds,
           total_amount: totalAmount,
         },
@@ -32,7 +33,7 @@ export class OrderService {
     });
   }
 
-  async getOrdersByUser(userId: number) {
+  async getOrdersByUser(userId: string) {
     const orders = await prisma.order.findMany({
       where: { userId },
       orderBy: { created_at: "desc" },

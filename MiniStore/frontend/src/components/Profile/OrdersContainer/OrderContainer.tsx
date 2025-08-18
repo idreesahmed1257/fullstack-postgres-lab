@@ -23,7 +23,7 @@ const orderColumns: Column[] = [
       </>
     ),
   },
-  { key: "created_at", label: "Date & Time", render: (val) => `${dayjs(val).format("DD MMM YYYY | hh:mm A")}` },
+  { key: "createdAt", label: "Date & Time", render: (val) => `${dayjs(val).format("DD MMM YYYY | hh:mm A")}` },
   { key: "total_amount", label: "Total", render: (val) => `$${val.toFixed(2)}` },
 ];
 

@@ -1,12 +1,12 @@
 import { PersonOutlineOutlined, ShoppingCartOutlined } from "@mui/icons-material";
 import { Badge, Button, IconButton, useTheme } from "@mui/material";
+import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import LoginIcon from "../../../assets/LoginIcon";
 import { RootState } from "../../../Redux/store";
-import styles from "./navbar.module.scss";
 import ProfileCard from "../ProfileCard/ProfileCard";
-import toast from "react-hot-toast";
+import styles from "./navbar.module.scss";
 
 const Navbar = () => {
   const theme = useTheme();

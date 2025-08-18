@@ -7,7 +7,6 @@ import { Provider } from "react-redux";
 import { persistor, store } from "./Redux/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { Toaster } from "react-hot-toast";
-import AppBoot from "./components/Shared/AppBoot";
 function App() {
   return (
     <>
@@ -16,7 +15,6 @@ function App() {
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <MyRouter />
-            <AppBoot />
             <Toaster />
           </ThemeProvider>
         </PersistGate>

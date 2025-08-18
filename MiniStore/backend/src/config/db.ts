@@ -1,12 +1,9 @@
-import { Pool } from "pg";
-import { DATABASE_URL } from "./env";
+import { PrismaClient } from "@prisma/client";
 
-const pool = new Pool({
-  connectionString: DATABASE_URL,
+const prisma = new PrismaClient();
+
+prisma.$connect().then(() => {
+  console.log("✅ Connected to PostgreSQL via Prisma");
 });
 
-pool.on("connect", () => {
-  console.log("✅ Connected to PostgreSQL");
-});
-
-export default pool;
+export const db = prisma;
