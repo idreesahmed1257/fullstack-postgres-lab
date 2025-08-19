@@ -1,21 +1,18 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import Cookies from "js-cookie";
-import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { loginSuccess } from "../../../Redux/slice/auth.slice";
-import { AppDispatch } from "../../../Redux/store";
-import { loginService } from "../../../services/auth.service";
-import styles from "./loginContainer.module.scss";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { loginService } from "../../../services/auth.service";
+import { useAuthStore } from "../../../stores";
+import styles from "./loginContainer.module.scss";
 
-import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
 import { LoginFormInputs, loginSchema } from "./login.helper";
 
 const LoginContainer = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
+  const { loginSuccess } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -37,7 +34,7 @@ const LoginContainer = () => {
       const { user, token } = response;
 
       if (token) {
-        dispatch(loginSuccess({ user, token }));
+        loginSuccess(user, token);
         navigate("/");
       }
     } catch (error) {

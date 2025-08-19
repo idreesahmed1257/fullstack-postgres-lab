@@ -1,18 +1,15 @@
 import { Avatar, Typography, Tooltip, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 import { AccountBalanceWalletOutlined, Logout, Person } from "@mui/icons-material";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../../Redux/store";
 import styles from "./profileCard.module.scss";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { logout, updateWalletAmount } from "../../../Redux/slice/auth.slice"; // adjust path
-import { getUserService, logoutService } from "../../../services/auth.service";
+import { logoutService } from "../../../services/auth.service";
+import { useAuthStore } from "../../../stores";
+import { useUserQuery } from "../../../hooks/useAuthQueries";
 
 const ProfileCard = () => {
-  const { user } = useSelector((state: RootState) => state.auth);
-  const { walletBalance } = useSelector((state: RootState) => state.auth);
+  const { user, walletBalance, logout, updateWalletAmount } = useAuthStore();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -32,22 +29,17 @@ const ProfileCard = () => {
 
   const handleLogout = () => {
     logoutService();
-    dispatch(logout());
+    logout();
     handleClose();
   };
 
-  const getUser = async () => {
-    try {
-      const response: any = await getUserService();
-      dispatch(updateWalletAmount({ walletAmount: response?.data?.walletBalance }));
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
+  const { data: userData } = useUserQuery();
 
   useEffect(() => {
-    getUser();
-  }, []);
+    if (userData?.walletBalance !== undefined && userData?.walletBalance !== null) {
+      updateWalletAmount(userData.walletBalance);
+    }
+  }, [userData, updateWalletAmount]);
 
   return (
     <>

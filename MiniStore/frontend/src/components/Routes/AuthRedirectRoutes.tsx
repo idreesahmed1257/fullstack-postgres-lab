@@ -1,9 +1,8 @@
-import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
-import { RootState } from "../../Redux/store";
+import { useAuthStore } from "../../stores";
 
 const AuthRedirectRoutes = () => {
-  const { isAuth } = useSelector((state: RootState) => state.auth);
+  const { isAuth } = useAuthStore();
 
   return isAuth ? <Navigate to="/" /> : <Outlet />;
 };

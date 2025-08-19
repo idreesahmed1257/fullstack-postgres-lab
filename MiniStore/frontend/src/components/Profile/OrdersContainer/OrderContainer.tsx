@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ProfileTable, { Column } from "../ProfileTable/ProfileTable";
 import styles from "../ProfileContainer/profileContainer.module.scss";
 import dayjs from "dayjs";
-import { getUserOrderService } from "../../../services/order.service";
+import { useUserOrdersQuery } from "../../../hooks/useOrders";
+import { CircularProgress, Stack } from "@mui/material";
 
 const orderColumns: Column[] = [
   { key: "id", label: "Order No." },
@@ -23,30 +24,23 @@ const orderColumns: Column[] = [
       </>
     ),
   },
-  { key: "createdAt", label: "Date & Time", render: (val) => `${dayjs(val).format("DD MMM YYYY | hh:mm A")}` },
+  { key: "created_at", label: "Date & Time", render: (val) => `${dayjs(val).format("DD MMM YYYY | hh:mm A")}` },
   { key: "total_amount", label: "Total", render: (val) => `$${val.toFixed(2)}` },
 ];
 
 const OrderContainer = () => {
-  const [orders, setOrders] = useState([]);
-
-  const fetchUserOrders = async () => {
-    try {
-      const response = await getUserOrderService();
-      setOrders(response?.data?.data);
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserOrders();
-  }, []);
+  const { data: orders = [], isLoading } = useUserOrdersQuery();
 
   return (
     <>
       <h3>Recent Orders</h3>
-      <ProfileTable columns={orderColumns} data={orders} />
+      {isLoading ? (
+        <Stack sx={{ display: "flex", height: "20vh", justifyContent: "center", alignItems: "center" }}>
+          <CircularProgress />
+        </Stack>
+      ) : (
+        <ProfileTable columns={orderColumns} data={orders} />
+      )}
     </>
   );
 };

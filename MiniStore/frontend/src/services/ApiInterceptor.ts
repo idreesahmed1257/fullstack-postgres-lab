@@ -1,6 +1,4 @@
 import axios from "axios";
-import { logout } from "../Redux/slice/auth.slice";
-import { store } from "../Redux/store";
 
 const apiInterceptor = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -22,7 +20,6 @@ apiInterceptor.interceptors.response.use(
   },
   function (error) {
     if (error?.response?.status === 401) {
-      store.dispatch(logout());
     }
     return Promise.reject(error);
   }

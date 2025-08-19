@@ -2,30 +2,26 @@ import React from "react";
 import { Grid } from "@mui/material";
 import ProductCard from "../ProductCard/ProductCard";
 import { Product } from "../../../utils/interfaces";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../Redux/store";
-import { addItem } from "../../../Redux/slice/product.slice";
+import { useProductStore } from "../../../stores";
 
 interface ProductWrapperProps {
   products: Product[];
 }
 
 const ProductWrapper: React.FC<ProductWrapperProps> = ({ products }) => {
-  const dispatch = useDispatch<AppDispatch>();
-
-  const prodState = useSelector((state: RootState) => state.product);
+  const { cartItems, addItem } = useProductStore();
 
   const addToCart = (product: Product) => {
-    dispatch(addItem({ product }));
+    addItem(product);
   };
 
   const checkSelectedItem = (currentProduct: Product): boolean => {
-    return prodState.cartItems.some((item) => item.id === currentProduct.id);
+    return cartItems.some((item) => item.id === currentProduct.id);
   };
 
   return (
     <Grid container justifyContent={"center"} spacing={3} padding={2}>
-      {products.map((product) => (
+      {products.map((product: Product) => (
         <Grid key={product.id}>
           <ProductCard
             id={product.id}

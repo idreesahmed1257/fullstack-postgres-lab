@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { Tab, Tabs } from "@mui/material";
+import { useState } from "react";
+import { Tab, Tabs, CircularProgress, Stack } from "@mui/material";
 import ProfileTable, { Column } from "../ProfileTable/ProfileTable";
 import styles from "../GiftsContainer/giftsContainer.module.scss";
-import { getReceivedCreditsService, getSentCreditsService } from "../../../services/credit.service";
 import dayjs from "dayjs";
+import { useReceivedCreditsQuery, useSentCreditsQuery } from "../../../hooks/useCredits";
 
 const creditReceiveColumns: Column[] = [
   { key: "sender.name", label: "Sender Name" },
@@ -22,23 +22,8 @@ const creditSentColumns: Column[] = [
 const CreditsContainer = () => {
   const [tab, setTab] = useState(0);
 
-  const [sentCredits, setSentCredits] = useState([]);
-  const [receivedCredits, setReceivedCredits] = useState([]);
-
-  const fetchCredits = async () => {
-    try {
-      const [sentRes, receivedRes] = await Promise.all([getSentCreditsService(), getReceivedCreditsService()]);
-
-      setSentCredits(sentRes?.data?.data);
-      setReceivedCredits(receivedRes?.data?.data);
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchCredits();
-  }, []);
+  const { data: sentCredits = [], isLoading: loadingSent } = useSentCreditsQuery();
+  const { data: receivedCredits = [], isLoading: loadingReceived } = useReceivedCreditsQuery();
 
   return (
     <div className={styles.giftsContainer}>
@@ -52,14 +37,26 @@ const CreditsContainer = () => {
       {tab === 0 && (
         <>
           <h3>Recent Credits Sent</h3>
-          <ProfileTable columns={creditSentColumns} data={sentCredits} />
+          {loadingSent ? (
+            <Stack sx={{ display: "flex", height: "20vh", justifyContent: "center", alignItems: "center" }}>
+              <CircularProgress />
+            </Stack>
+          ) : (
+            <ProfileTable columns={creditSentColumns} data={sentCredits} />
+          )}
         </>
       )}
 
       {tab === 1 && (
         <>
           <h3>Recent Credits Received</h3>
-          <ProfileTable columns={creditReceiveColumns} data={receivedCredits} />
+          {loadingReceived ? (
+            <Stack sx={{ display: "flex", height: "20vh", justifyContent: "center", alignItems: "center" }}>
+              <CircularProgress />
+            </Stack>
+          ) : (
+            <ProfileTable columns={creditReceiveColumns} data={receivedCredits} />
+          )}
         </>
       )}
     </div>

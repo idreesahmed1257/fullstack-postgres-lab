@@ -1,19 +1,17 @@
 import { Divider, Tab, Tabs } from "@mui/material";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../Redux/store";
 import CreditsContainer from "../CreditsContainer/CreditsContainer";
 import GiftsContainer from "../GiftsContainer/GiftsContainer";
 import OrderContainer from "../OrdersContainer/OrderContainer";
 import WalletCard from "../WalletCard/WalletCard";
 import styles from "./profileContainer.module.scss";
+import { useAuthStore } from "../../../stores";
 
 const ProfileContainer = () => {
   const [tab, setTab] = useState(0);
 
-  const { user } = useSelector((state: RootState) => state.auth);
-  const { walletBalance } = useSelector((state: RootState) => state.auth);
+  const { user, walletBalance } = useAuthStore();
 
   return (
     <div className={styles.profileContainer}>

@@ -3,15 +3,16 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } 
 import { useState } from "react";
 import toast from "react-hot-toast";
 import styles from "./walletCard.module.scss";
-import { sendCreditsService } from "../../../services/credit.service";
-import { useDispatch } from "react-redux";
-import { deductWalletAmount } from "../../../Redux/slice/auth.slice";
 import { useForm } from "react-hook-form";
 import { WalletFormInputs, walletSchema } from "./walletCard.helper";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useAuthStore } from "../../../stores";
+import { useSendCreditsMutation } from "../../../hooks/useAuthQueries";
 
 const WalletCard = ({ balance }: { balance?: number }) => {
   const [open, setOpen] = useState(false);
+  const { deductWalletAmount } = useAuthStore();
+  const sendCreditsMutation = useSendCreditsMutation();
 
   const {
     register,
@@ -22,24 +23,25 @@ const WalletCard = ({ balance }: { balance?: number }) => {
     resolver: yupResolver(walletSchema),
   });
 
-  const dispatch = useDispatch();
-
   const handleGiftCredits = () => {
     setOpen(true);
   };
 
   const handleSend = async (data: WalletFormInputs) => {
     try {
-      const response = await toast.promise(sendCreditsService(Number(data.amount), data.email), {
-        loading: "Sending Credits...",
-        success: "Credits sent successfully!",
-        error: (err) => err?.response?.data?.message || "Failed to send Credits.",
-      });
+      const response = await toast.promise(
+        sendCreditsMutation.mutateAsync({ amount: Number(data.amount), email: data.email }),
+        {
+          loading: "Sending Credits...",
+          success: "Credits sent successfully!",
+          error: (err) => err?.response?.data?.message || "Failed to send Credits.",
+        }
+      );
 
-      if (response?.status === 200) {
+      if (response?.status === 200 || response) {
         reset();
         setOpen(false);
-        dispatch(deductWalletAmount({ orderAmount: Number(data.amount) }));
+        deductWalletAmount(Number(data.amount));
       }
     } catch (error) {
       console.error("Credit order error:", error);

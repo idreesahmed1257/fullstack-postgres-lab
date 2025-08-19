@@ -1,23 +1,21 @@
 import { PersonOutlineOutlined, ShoppingCartOutlined } from "@mui/icons-material";
 import { Badge, Button, IconButton, useTheme } from "@mui/material";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import LoginIcon from "../../../assets/LoginIcon";
-import { RootState } from "../../../Redux/store";
 import ProfileCard from "../ProfileCard/ProfileCard";
 import styles from "./navbar.module.scss";
+import { useAuthStore, useProductStore } from "../../../stores";
 
 const Navbar = () => {
   const theme = useTheme();
-  const { isAuth } = useSelector((state: RootState) => state.auth);
+  const { isAuth } = useAuthStore();
+  const { cartItems } = useProductStore();
 
   const navigate = useNavigate();
   const handleSignInClick = () => {
     navigate("/login");
   };
-
-  const { cartItems } = useSelector((state: RootState) => state.product);
 
   const handleCartClick = () => {
     if (!isAuth) {

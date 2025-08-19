@@ -1,31 +1,30 @@
 import { Add, CardGiftcard, DeleteOutline, Remove, ShoppingBag, ShoppingCartCheckout } from "@mui/icons-material";
 import { Button, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { decreaseQty, increaseQty, resetCart } from "../../../Redux/slice/product.slice";
-import { AppDispatch, RootState } from "../../../Redux/store";
 import styles from "./cartContainer.module.scss";
 import { Product } from "../../../utils/interfaces";
 import toast from "react-hot-toast";
-import { createOrderService } from "../../../services/order.service";
 import { useNavigate } from "react-router-dom";
-import { deductWalletAmount } from "../../../Redux/slice/auth.slice";
 import { useState } from "react";
-import { sendGiftService } from "../../../services/gift.service";
+import { useAuthStore, useProductStore } from "../../../stores";
+import { useCreateOrderMutation, useSendGiftMutation } from "../../../hooks/useAuthQueries";
 
 const CartContainer = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { cartItems } = useSelector((state: RootState) => state.product);
+  const { cartItems, increaseQty, decreaseQty, resetCart } = useProductStore();
+  const { deductWalletAmount } = useAuthStore();
 
   const [giftDialogOpen, setGiftDialogOpen] = useState(false);
   const [giftEmail, setGiftEmail] = useState("");
 
+  const createOrderMutation = useCreateOrderMutation();
+  const sendGiftMutation = useSendGiftMutation();
+
   const increaseQuantity = (id: number | string) => {
-    dispatch(increaseQty({ productId: Number(id) }));
+    increaseQty(Number(id));
   };
 
   const decreaseQuantity = (id: number | string) => {
-    dispatch(decreaseQty({ productId: Number(id) }));
+    decreaseQty(Number(id));
   };
 
   const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
@@ -33,15 +32,15 @@ const CartContainer = () => {
   const checkOut = async () => {
     try {
       const productIds = cartItems.map((item: Product) => Number(item.id));
-      const response = await toast.promise(createOrderService(productIds, totalPrice), {
+      const response = await toast.promise(createOrderMutation.mutateAsync({ productIds, totalAmount: totalPrice }), {
         loading: "Checking out...",
         success: "Order successful!",
         error: (err) => err?.response?.data?.message || "Order failed.",
       });
 
-      if (response?.status === 200) {
-        dispatch(resetCart());
-        dispatch(deductWalletAmount({ orderAmount: totalPrice }));
+      if (response?.status === 200 || response) {
+        resetCart();
+        deductWalletAmount(totalPrice);
         navigate("/");
       }
     } catch (error) {
@@ -57,18 +56,15 @@ const CartContainer = () => {
 
     try {
       const productIds = cartItems.map((item: Product) => Number(item.id));
-      const response = await toast.promise(
-        sendGiftService(productIds, totalPrice, giftEmail), // separate endpoint
-        {
-          loading: "Sending gift...",
-          success: "Gift sent successfully!",
-          error: (err) => err?.response?.data?.message || "Failed to send Gifts.",
-        }
-      );
+      const response = await toast.promise(sendGiftMutation.mutateAsync({ productIds, totalAmount: totalPrice, recipientEmail: giftEmail }), {
+        loading: "Sending gift...",
+        success: "Gift sent successfully!",
+        error: (err) => err?.response?.data?.message || "Failed to send Gifts.",
+      });
 
-      if (response?.status === 200) {
-        dispatch(resetCart());
-        dispatch(deductWalletAmount({ orderAmount: totalPrice }));
+      if (response?.status === 200 || response) {
+        resetCart();
+        deductWalletAmount(totalPrice);
         navigate("/");
       }
     } catch (error) {
@@ -79,7 +75,7 @@ const CartContainer = () => {
   };
 
   const handleClearCart = () => {
-    dispatch(resetCart());
+    resetCart();
     toast.success("Cart cleared.");
   };
 

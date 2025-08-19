@@ -24,3 +24,7 @@ export const products = [
     price: 10.49,
   },
 ];
+
+export const productsKeys = {
+	all: (searchTerm: string) => ["products", { searchTerm }] as const,
+};

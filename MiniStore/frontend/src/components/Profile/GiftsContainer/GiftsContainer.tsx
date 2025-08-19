@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { Tab, Tabs } from "@mui/material";
+import { useState } from "react";
+import { Tab, Tabs, CircularProgress, Stack } from "@mui/material";
 import ProfileTable, { Column } from "../ProfileTable/ProfileTable";
 import styles from "./giftsContainer.module.scss";
-import { getReceivedGiftsService, getSentGiftsService } from "../../../services/gift.service";
 import dayjs from "dayjs";
+import { useReceivedGiftsQuery, useSentGiftsQuery } from "../../../hooks/useGifts";
 
 const giftReceiveColumns: Column[] = [
   { key: "sender.name", label: "Sender Name" },
@@ -58,23 +58,8 @@ const giftSentColumns: Column[] = [
 const GiftsContainer = () => {
   const [tab, setTab] = useState(0);
 
-  const [sentGifts, setSentGifts] = useState([]);
-  const [receivedGifts, setReceivedGifts] = useState([]);
-
-  const fetchGifts = async () => {
-    try {
-      const [sentRes, receivedRes] = await Promise.all([getSentGiftsService(), getReceivedGiftsService()]);
-
-      setSentGifts(sentRes?.data?.data);
-      setReceivedGifts(receivedRes?.data?.data);
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchGifts();
-  }, []);
+  const { data: sentGifts = [], isLoading: loadingSent } = useSentGiftsQuery();
+  const { data: receivedGifts = [], isLoading: loadingReceived } = useReceivedGiftsQuery();
 
   return (
     <div className={styles.giftsContainer}>
@@ -88,14 +73,26 @@ const GiftsContainer = () => {
       {tab === 0 && (
         <>
           <h3>Recent Gifts Sent</h3>
-          <ProfileTable columns={giftSentColumns} data={sentGifts} />
+          {loadingSent ? (
+            <Stack sx={{ display: "flex", height: "20vh", justifyContent: "center", alignItems: "center" }}>
+              <CircularProgress />
+            </Stack>
+          ) : (
+            <ProfileTable columns={giftSentColumns} data={sentGifts} />
+          )}
         </>
       )}
 
       {tab === 1 && (
         <>
           <h3>Recent Gifts Received</h3>
-          <ProfileTable columns={giftReceiveColumns} data={receivedGifts} />
+          {loadingReceived ? (
+            <Stack sx={{ display: "flex", height: "20vh", justifyContent: "center", alignItems: "center" }}>
+              <CircularProgress />
+            </Stack>
+          ) : (
+            <ProfileTable columns={giftReceiveColumns} data={receivedGifts} />
+          )}
         </>
       )}
     </div>

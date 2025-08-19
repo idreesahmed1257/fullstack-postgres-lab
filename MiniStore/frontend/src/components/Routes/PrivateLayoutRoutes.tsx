@@ -1,10 +1,9 @@
-import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
-import { RootState } from "../../Redux/store";
+import { useAuthStore } from "../../stores";
 import Layout from "./Layout";
 
 const PrivateLayoutRoutes = () => {
-  const { isAuth } = useSelector((state: RootState) => state.auth);
+  const { isAuth } = useAuthStore();
 
   return isAuth ? (
     <Layout>
