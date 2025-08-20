@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { Product } from '../utils/interfaces';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { Product } from "../utils/interfaces";
 
 interface CartItem {
   qty: number;
@@ -27,10 +27,8 @@ type ProductStore = ProductState & ProductActions;
 export const useProductStore = create<ProductStore>()(
   persist(
     (set, get) => ({
-      // Initial state
       cartItems: [],
 
-      // Actions
       resetCart: () => {
         set({ cartItems: [] });
       },
@@ -40,12 +38,10 @@ export const useProductStore = create<ProductStore>()(
         const existingIndex = cartItems.findIndex((item) => item.id === product.id);
 
         if (existingIndex !== -1) {
-          // Remove item if it already exists (toggle behavior)
           set({
             cartItems: cartItems.filter((item) => item.id !== product.id),
           });
         } else {
-          // Add new item
           set({
             cartItems: [
               ...cartItems,
@@ -60,9 +56,7 @@ export const useProductStore = create<ProductStore>()(
 
       increaseQty: (productId: number) => {
         const { cartItems } = get();
-        const updatedItems = cartItems.map((item) =>
-          item.id === productId ? { ...item, qty: item.qty + 1 } : item
-        );
+        const updatedItems = cartItems.map((item) => (item.id === productId ? { ...item, qty: item.qty + 1 } : item));
         set({ cartItems: updatedItems });
       },
 
@@ -72,12 +66,10 @@ export const useProductStore = create<ProductStore>()(
 
         if (itemIndex !== -1) {
           if (cartItems[itemIndex].qty > 1) {
-            // Decrease quantity
             const updatedItems = [...cartItems];
             updatedItems[itemIndex] = { ...updatedItems[itemIndex], qty: updatedItems[itemIndex].qty - 1 };
             set({ cartItems: updatedItems });
           } else {
-            // Remove item if quantity is 1
             set({
               cartItems: cartItems.filter((item) => item.id !== productId),
             });
@@ -86,7 +78,7 @@ export const useProductStore = create<ProductStore>()(
       },
     }),
     {
-      name: 'product-storage',
+      name: "product-storage",
       partialize: (state) => ({
         cartItems: state.cartItems,
       }),

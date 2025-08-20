@@ -1,9 +1,7 @@
-import React from "react";
-import ProfileTable, { Column } from "../ProfileTable/ProfileTable";
-import styles from "../ProfileContainer/profileContainer.module.scss";
+import { CircularProgress, Stack } from "@mui/material";
 import dayjs from "dayjs";
 import { useUserOrdersQuery } from "../../../hooks/useOrders";
-import { CircularProgress, Stack } from "@mui/material";
+import ProfileTable, { Column } from "../ProfileTable/ProfileTable";
 
 const orderColumns: Column[] = [
   { key: "id", label: "Order No." },
@@ -15,9 +13,9 @@ const orderColumns: Column[] = [
         {val.map((prod: any, index: number) => {
           const isLast = index === val.length - 1;
           return (
-            <div key={index} className={styles.productTableItem}>
+            <div key={index} className="flex flex-col gap-1">
               <strong>{prod.title}</strong>
-              {!isLast && <hr />}
+              {!isLast && <hr className="border-t border-gray-200" />}
             </div>
           );
         })}
@@ -33,7 +31,7 @@ const OrderContainer = () => {
 
   return (
     <>
-      <h3>Recent Orders</h3>
+      <h3 className="mb-4">Recent Orders</h3>
       {isLoading ? (
         <Stack sx={{ display: "flex", height: "20vh", justifyContent: "center", alignItems: "center" }}>
           <CircularProgress />

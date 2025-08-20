@@ -1,6 +1,5 @@
 import { Avatar, Typography, Tooltip, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 import { AccountBalanceWalletOutlined, Logout, Person } from "@mui/icons-material";
-import styles from "./profileCard.module.scss";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { logoutService } from "../../../services/auth.service";
@@ -43,22 +42,30 @@ const ProfileCard = () => {
 
   return (
     <>
-      <div onClick={handleClickProfileCard} className={styles.profileCard}>
+      <div onClick={handleClickProfileCard} className="flex items-center gap-2 cursor-pointer hover:-translate-y-0.5 transition-transform">
         <Tooltip title={user?.name}>
-          <Avatar className={styles.avatar}>{user?.name?.[0]?.toUpperCase()}</Avatar>
+          <Avatar
+            sx={{
+              bgcolor: "#994D80",
+              width: 36,
+              height: 36,
+              fontSize: "0.9rem",
+            }}
+          >
+            {user?.name?.[0]?.toUpperCase()}
+          </Avatar>
         </Tooltip>
-        <div className={styles.userInfo}>
-          <p className={styles.name}>{user?.name}</p>
-          <div className={styles.wallet}>
+        <div className="flex flex-col leading-tight">
+          <p className="text-sm font-bold capitalize text-primary">{user?.name}</p>
+          <div className="flex items-center gap-1 text-primary">
             <AccountBalanceWalletOutlined fontSize="small" />
-            <Typography variant="body2" className={styles.balance}>
+            <Typography variant="body2" className="text-xs font-medium">
               ${walletBalance?.toFixed(2)}
             </Typography>
           </div>
         </div>
       </div>
 
-      {/* Dropdown Menu */}
       <Menu
         anchorEl={anchorEl}
         open={open}

@@ -1,6 +1,5 @@
 import { Add, CardGiftcard, DeleteOutline, Remove, ShoppingBag, ShoppingCartCheckout } from "@mui/icons-material";
 import { Button, IconButton, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
-import styles from "./cartContainer.module.scss";
 import { Product } from "../../../utils/interfaces";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -32,11 +31,17 @@ const CartContainer = () => {
   const checkOut = async () => {
     try {
       const productIds = cartItems.map((item: Product) => Number(item.id));
-      const response = await toast.promise(createOrderMutation.mutateAsync({ productIds, totalAmount: totalPrice }), {
-        loading: "Checking out...",
-        success: "Order successful!",
-        error: (err) => err?.response?.data?.message || "Order failed.",
-      });
+      const response = await toast.promise(
+        createOrderMutation.mutateAsync({
+          productIds,
+          totalAmount: totalPrice,
+        }),
+        {
+          loading: "Checking out...",
+          success: "Order successful!",
+          error: (err) => err?.response?.data?.message || "Order failed.",
+        }
+      );
 
       if (response?.status === 200 || response) {
         resetCart();
@@ -56,11 +61,18 @@ const CartContainer = () => {
 
     try {
       const productIds = cartItems.map((item: Product) => Number(item.id));
-      const response = await toast.promise(sendGiftMutation.mutateAsync({ productIds, totalAmount: totalPrice, recipientEmail: giftEmail }), {
-        loading: "Sending gift...",
-        success: "Gift sent successfully!",
-        error: (err) => err?.response?.data?.message || "Failed to send Gifts.",
-      });
+      const response = await toast.promise(
+        sendGiftMutation.mutateAsync({
+          productIds,
+          totalAmount: totalPrice,
+          recipientEmail: giftEmail,
+        }),
+        {
+          loading: "Sending gift...",
+          success: "Gift sent successfully!",
+          error: (err) => err?.response?.data?.message || "Failed to send Gifts.",
+        }
+      );
 
       if (response?.status === 200 || response) {
         resetCart();
@@ -80,59 +92,59 @@ const CartContainer = () => {
   };
 
   return (
-    <div className={styles.cartContainer}>
-      <Typography variant="h5" sx={{ fontWeight: 700 }}>
+    <div className="bg-bg-main p-8 min-h-[90vh] flex flex-col gap-6">
+      <Typography variant="h5" className="font-bold">
         Your Cart
       </Typography>
 
-      <div className={styles.itemContainer}>
+      <div className="h-[50vh] overflow-y-auto">
         {cartItems.length > 0 ? (
           cartItems.map((item) => (
-            <div key={item.id} className={styles.itemCard}>
-              <div className={styles.itemLeft}>
-                <img className={styles.itemImg} src={item.thumbnail} alt="" />
-                <div className={styles.itemInfo}>
-                  <span className={styles.itemName}>{item.title}</span>
-                  <span className={styles.itemPrice}>${item.price.toFixed(2)}</span>
+            <div key={item.id} className="flex items-center justify-between p-4 mb-3 rounded-lg shadow-md bg-bg-paper">
+              <div className="flex items-center gap-5">
+                <img className="w-[100px] h-[100px] rounded-xl" src={item.thumbnail} alt="" />
+                <div className="flex flex-col">
+                  <span className="font-semibold text-text-dark">{item.title}</span>
+                  <span className="font-medium text-primary">${item.price.toFixed(2)}</span>
                 </div>
               </div>
-              <div className={styles.quantityControls}>
-                <IconButton onClick={() => decreaseQuantity(item.id)} size="small">
+
+              <div className="flex items-center gap-2">
+                <IconButton onClick={() => decreaseQuantity(item.id)} size="small" className="!bg-primary !text-white !min-w-[32px] !h-[32px] !p-0 !rounded-md">
                   <Remove />
                 </IconButton>
                 <Typography>{item.qty}</Typography>
-                <IconButton onClick={() => increaseQuantity(item.id)} size="small">
+                <IconButton onClick={() => increaseQuantity(item.id)} size="small" className="!bg-primary !text-white !min-w-[32px] !h-[32px] !p-0 !rounded-md">
                   <Add />
                 </IconButton>
               </div>
             </div>
           ))
         ) : (
-          <div className={styles.noItemMessage}>
+          <div className="flex flex-col items-center justify-center h-[50vh] text-primary gap-2">
             <ShoppingBag />
             <p>Your cart is empty</p>
           </div>
         )}
       </div>
 
-      <div className={styles.totalSection}>
+      <div className="flex justify-between p-4 mt-auto font-semibold rounded-lg bg-bg-paper text-text-dark">
         <Typography>Total</Typography>
         <Typography>${totalPrice.toFixed(2)}</Typography>
       </div>
 
-      <div className={styles.actions}>
-        <Button variant="outlined" color="secondary" startIcon={<CardGiftcard />} onClick={() => setGiftDialogOpen(true)}>
+      <div className="flex gap-4">
+        <Button variant="contained" startIcon={<CardGiftcard />} onClick={() => setGiftDialogOpen(true)} className="flex-1 !py-3 !font-semibold !bg-secondary !text-white">
           Send as Gift
         </Button>
-        <Button onClick={checkOut} variant="contained" startIcon={<ShoppingCartCheckout />}>
+        <Button onClick={checkOut} variant="contained" startIcon={<ShoppingCartCheckout />} className="flex-1 !py-3 !font-semibold !bg-primary !text-white">
           Checkout
         </Button>
-        <Button variant="outlined" color="error" startIcon={<DeleteOutline />} onClick={handleClearCart}>
+        <Button variant="contained" startIcon={<DeleteOutline />} onClick={handleClearCart} className="flex-1 !py-3 !font-semibold !bg-red-500 !text-white">
           Clear Cart
         </Button>
       </div>
 
-      {/* Gift Dialog */}
       <Dialog open={giftDialogOpen} onClose={() => setGiftDialogOpen(false)}>
         <DialogTitle>Send as Gift</DialogTitle>
         <DialogContent>

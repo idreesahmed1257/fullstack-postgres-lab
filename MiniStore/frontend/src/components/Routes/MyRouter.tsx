@@ -14,7 +14,6 @@ const MyRouter = () => {
       <Routes>
         <Route element={<PrivateLayoutRoutes />}>
           <Route path="/profile" element={<Profile />} />
-          <Route path="/cart" element={<Cart />} />
         </Route>
         <Route element={<PublicLayoutRoutes />}>
           <Route path="/" element={<Home />} />

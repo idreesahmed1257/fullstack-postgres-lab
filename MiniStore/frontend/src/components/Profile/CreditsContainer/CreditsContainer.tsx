@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Tab, Tabs, CircularProgress, Stack } from "@mui/material";
 import ProfileTable, { Column } from "../ProfileTable/ProfileTable";
-import styles from "../GiftsContainer/giftsContainer.module.scss";
 import dayjs from "dayjs";
 import { useReceivedCreditsQuery, useSentCreditsQuery } from "../../../hooks/useCredits";
 
@@ -26,19 +25,19 @@ const CreditsContainer = () => {
   const { data: receivedCredits = [], isLoading: loadingReceived } = useReceivedCreditsQuery();
 
   return (
-    <div className={styles.giftsContainer}>
-      <div className={styles.tabsWrapper}>
-        <Tabs value={tab} onChange={(_, newValue) => setTab(newValue)} centered TabIndicatorProps={{ style: { display: "none" } }} className={styles.tabs}>
-          <Tab label="Sent" className={`${styles.tab} ${tab === 0 ? styles.activeTab : ""}`} />
-          <Tab label="Received" className={`${styles.tab} ${tab === 1 ? styles.activeTab : ""}`} />
+    <div className="p-4 rounded-lg bg-bg-main">
+      <div className="flex justify-center p-1 mb-4 rounded-md bg-bg-paper">
+        <Tabs value={tab} onChange={(_, newValue) => setTab(newValue)} centered TabIndicatorProps={{ style: { display: "none" } }}>
+          <Tab label="Sent" className={`text-sm font-medium rounded px-3 py-1 min-h-[28px] ${tab === 0 ? "bg-primary text-bg-main font-semibold" : "text-text-dark hover:bg-primary/40"}`} />
+          <Tab label="Received" className={`text-sm font-medium rounded px-3 py-1 min-h-[28px] ${tab === 1 ? "bg-primary text-bg-main font-semibold" : "text-text-dark hover:bg-primary/40"}`} />
         </Tabs>
       </div>
 
       {tab === 0 && (
         <>
-          <h3>Recent Credits Sent</h3>
+          <h3 className="mb-2 font-bold text-primary">Recent Credits Sent</h3>
           {loadingSent ? (
-            <Stack sx={{ display: "flex", height: "20vh", justifyContent: "center", alignItems: "center" }}>
+            <Stack className="flex items-center justify-center h-52">
               <CircularProgress />
             </Stack>
           ) : (
@@ -49,9 +48,9 @@ const CreditsContainer = () => {
 
       {tab === 1 && (
         <>
-          <h3>Recent Credits Received</h3>
+          <h3 className="mb-2 font-bold text-primary">Recent Credits Received</h3>
           {loadingReceived ? (
-            <Stack sx={{ display: "flex", height: "20vh", justifyContent: "center", alignItems: "center" }}>
+            <Stack className="flex items-center justify-center h-52">
               <CircularProgress />
             </Stack>
           ) : (

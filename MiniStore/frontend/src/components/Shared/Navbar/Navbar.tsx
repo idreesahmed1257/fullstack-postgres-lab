@@ -1,21 +1,17 @@
 import { PersonOutlineOutlined, ShoppingCartOutlined } from "@mui/icons-material";
-import { Badge, Button, IconButton, useTheme } from "@mui/material";
+import { Badge, Button, IconButton } from "@mui/material";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import LoginIcon from "../../../assets/LoginIcon";
 import ProfileCard from "../ProfileCard/ProfileCard";
-import styles from "./navbar.module.scss";
 import { useAuthStore, useProductStore } from "../../../stores";
 
 const Navbar = () => {
-  const theme = useTheme();
   const { isAuth } = useAuthStore();
   const { cartItems } = useProductStore();
-
   const navigate = useNavigate();
-  const handleSignInClick = () => {
-    navigate("/login");
-  };
+
+  const handleSignInClick = () => navigate("/login");
 
   const handleCartClick = () => {
     if (!isAuth) {
@@ -26,33 +22,23 @@ const Navbar = () => {
   };
 
   return (
-    <div className={styles.navbar}>
-      <Link to={"/"} className={styles.logoContainer}>
+    <div className="flex items-center justify-between px-8 py-2 border-b border-bg-paper">
+      <Link to="/" className="flex items-center gap-1 text-[22px] font-extrabold cursor-pointer no-underline">
         <LoginIcon />
-        <p>Giftly</p>
+        <p className="text-text-dark">Giftly</p>
       </Link>
 
-      <div className={styles.right}>
+      <div className="flex items-center gap-2">
         <Badge badgeContent={cartItems?.length} color="primary">
-          <IconButton
-            onClick={handleCartClick}
-            className={styles.iconBtn}
-            style={{
-              backgroundColor: cartItems?.length ? theme.palette.primary.main : theme.palette.background.default,
-            }}
-          >
-            <ShoppingCartOutlined
-              style={{
-                color: cartItems?.length ? theme.palette.background.default : theme.palette.primary.main,
-              }}
-            />
+          <IconButton onClick={handleCartClick} className={`h-[30px] rounded border border-primary ${cartItems?.length ? "bg-primary text-bg-main" : "bg-bg-main text-primary"}`}>
+            <ShoppingCartOutlined />
           </IconButton>
         </Badge>
 
         {isAuth ? (
           <ProfileCard />
         ) : (
-          <Button className={styles.signinBtn} onClick={handleSignInClick} color="primary" startIcon={<PersonOutlineOutlined />}>
+          <Button onClick={handleSignInClick} color="primary" startIcon={<PersonOutlineOutlined />} className="h-10 normal-case">
             Sign In
           </Button>
         )}

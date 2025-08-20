@@ -2,7 +2,6 @@ import { CardGiftcard } from "@mui/icons-material";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import styles from "./walletCard.module.scss";
 import { useForm } from "react-hook-form";
 import { WalletFormInputs, walletSchema } from "./walletCard.helper";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -30,7 +29,10 @@ const WalletCard = ({ balance }: { balance?: number }) => {
   const handleSend = async (data: WalletFormInputs) => {
     try {
       const response = await toast.promise(
-        sendCreditsMutation.mutateAsync({ amount: Number(data.amount), email: data.email }),
+        sendCreditsMutation.mutateAsync({
+          amount: Number(data.amount),
+          email: data.email,
+        }),
         {
           loading: "Sending Credits...",
           success: "Credits sent successfully!",
@@ -50,13 +52,13 @@ const WalletCard = ({ balance }: { balance?: number }) => {
   };
 
   return (
-    <div className={styles.overviewCards}>
-      <div className={styles.card}>
+    <div className="w-full gap-4 mb-8">
+      <div className="flex flex-col items-center h-full p-4 font-bold text-center border bg-bg-paper rounded-xl text-text-dark border-primary justify-evenly">
         <div>
           <p>Wallet Balance</p>
-          <h2>${(balance ?? 0).toFixed(2)}</h2>
+          <h2 className="text-primary">${(balance ?? 0).toFixed(2)}</h2>
         </div>
-        <Button className={styles.giftButton} variant="outlined" startIcon={<CardGiftcard />} onClick={handleGiftCredits}>
+        <Button variant="outlined" startIcon={<CardGiftcard />} onClick={handleGiftCredits} className="font-bold normal-case border-secondary bg-bg-main hover:border-primary hover:text-primary">
           Gift Credits
         </Button>
       </div>
@@ -64,14 +66,14 @@ const WalletCard = ({ balance }: { balance?: number }) => {
       <Dialog maxWidth="lg" open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Gift Credits</DialogTitle>
         <form onSubmit={handleSubmit(handleSend)}>
-          <DialogContent className={styles.contentForm}>
-            <div>
+          <DialogContent className="flex flex-col gap-5 min-w-[400px]">
+            <div className="w-full">
               <TextField size="small" label="Recipient's Email" type="text" fullWidth {...register("email")} />
-              {errors.email && <p className={styles.errorMsg}>{errors.email.message}</p>}
+              {errors.email && <p className="text-[#d32f2f] text-[0.85rem] mt-1 font-semibold w-full">{errors.email.message}</p>}
             </div>
-            <div>
+            <div className="w-full">
               <TextField size="small" label="Amount" type="text" fullWidth {...register("amount")} />
-              {errors.amount && <p className={styles.errorMsg}>{errors.amount.message}</p>}
+              {errors.amount && <p className="text-[#d32f2f] text-[0.85rem] mt-1 font-semibold w-full">{errors.amount.message}</p>}
             </div>
           </DialogContent>
           <DialogActions>

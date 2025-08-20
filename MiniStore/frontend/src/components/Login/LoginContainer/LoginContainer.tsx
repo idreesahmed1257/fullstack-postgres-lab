@@ -4,7 +4,6 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { loginService } from "../../../services/auth.service";
 import { useAuthStore } from "../../../stores";
-import styles from "./loginContainer.module.scss";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -47,36 +46,42 @@ const LoginContainer = () => {
   };
 
   return (
-    <div className={styles.loginWrapper}>
-      <div className={styles.loginCard}>
-        <h1 className={styles.title}>Welcome Back</h1>
-        <p className={styles.subtitle}>Please login to your account</p>
+    <div className="min-h-screen bg-bgmain flex justify-center items-center p-5">
+      <div className="bg-bgpaper px-8 py-10 rounded-xl shadow-giftly w-full max-w-md text-center">
+        <h1 className="text-2xl font-bold text-primary mb-3">Welcome Back</h1>
+        <p className="text-textdark mb-8 text-base">Please login to your account</p>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className={styles.inputGroup}>
-            <label htmlFor="email" className={styles.inputLabel}>
+          <div className="mb-5 text-left">
+            <label htmlFor="email" className="block mb-1.5 text-textdark font-semibold text-sm">
               Email Address
             </label>
-            <input id="email" type="email" placeholder="you@example.com" className={styles.inputField} {...register("email")} />
-            {errors.email && <p className={styles.errorMsg}>{errors.email.message}</p>}
+            <input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              className="w-full px-3.5 py-2.5 border-2 border-primary rounded-lg text-base outline-none text-textdark bg-white transition-colors focus:border-secondary"
+              {...register("email")}
+            />
+            {errors.email && <p className="text-[#d32f2f] text-sm mt-1 font-semibold">{errors.email.message}</p>}
           </div>
 
-          <div className={styles.inputGroup} style={{ position: "relative" }}>
-            <label htmlFor="password" className={styles.inputLabel}>
+          <div className="mb-5 text-left relative">
+            <label htmlFor="password" className="block mb-1.5 text-textdark font-semibold text-sm">
               Password
             </label>
-            <input id="password" type={showPassword ? "text" : "password"} placeholder="Enter your password" className={styles.inputField} style={{ paddingRight: "40px" }} {...register("password")} />
-            {errors.password && <p className={styles.errorMsg}>{errors.password.message}</p>}
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
+              className="w-full px-3.5 py-2.5 border-2 border-primary rounded-lg text-base outline-none text-textdark bg-white transition-colors focus:border-secondary pr-10"
+              {...register("password")}
+            />
+            {errors.password && <p className="text-[#d32f2f] text-sm mt-1 font-semibold">{errors.password.message}</p>}
+
             <div
               onClick={toggleShowPassword}
-              style={{
-                position: "absolute",
-                right: "10px",
-                top: "38px",
-                cursor: "pointer",
-                color: "#994D80",
-                userSelect: "none",
-              }}
+              className="absolute right-2.5 top-[38px] cursor-pointer text-primary select-none"
               aria-label={showPassword ? "Hide password" : "Show password"}
               role="button"
               tabIndex={0}
@@ -88,13 +93,17 @@ const LoginContainer = () => {
             </div>
           </div>
 
-          <button type="submit" className={styles.loginButton} disabled={isSubmitting}>
+          <button
+            type="submit"
+            className="w-full py-3 bg-gradient-to-r from-primary to-secondary rounded-lg text-white font-bold text-lg transition-colors hover:from-secondary hover:to-primary disabled:opacity-60"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <div className={styles.alreadyAccount}>
-          New to Giftly? <span onClick={() => navigate("/signup")}>Create an Account</span>
+        <div className="mt-4 text-sm text-primary">
+          New to Giftly? <span className="font-bold cursor-pointer" onClick={() => navigate("/signup")}>Create an Account</span>
         </div>
       </div>
     </div>
